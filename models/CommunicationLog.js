@@ -1,37 +1,37 @@
 const mongoose = require('mongoose');
 
 const communicationLogSchema = new mongoose.Schema({
-  campaignId: { // Reference to the campaign this communication belongs to
+  campaignId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Campaign',
     required: true
   },
-  customerId: { // Reference to the customer this message was sent to
-    type: String, // Storing customerId as a string for direct lookup
+  customerId: { 
+    type: String, 
     required: true
   },
-  messageContent: { // The actual message sent
+  messageContent: {
     type: String,
     required: true
   },
-  deliveryStatus: { // 'pending', 'sent', 'failed', 'delivered'
+  deliveryStatus: { 
     type: String,
     enum: ['pending', 'sent', 'failed', 'delivered'],
     default: 'pending'
   },
-  vendorMessageId: { // ID provided by the dummy vendor API for tracking
+  vendorMessageId: { 
     type: String,
-    sparse: true // Allows null values
+    sparse: true
   },
-  deliveryAttemptedAt: { // Timestamp when the message was attempted to be sent
+  deliveryAttemptedAt: {
     type: Date,
     default: Date.now
   },
-  deliveryUpdatedAt: { // Timestamp when the delivery status was last updated
+  deliveryUpdatedAt: { 
     type: Date,
     sparse: true
   },
-  failureReason: { // Reason for failure, if applicable
+  failureReason: { 
     type: String,
     sparse: true
   },
@@ -41,7 +41,6 @@ const communicationLogSchema = new mongoose.Schema({
   }
 });
 
-// Index for faster lookups by campaign and customer
 communicationLogSchema.index({ campaignId: 1, customerId: 1 });
 
 module.exports = mongoose.model('CommunicationLog', communicationLogSchema);

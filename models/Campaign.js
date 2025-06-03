@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const campaignSchema = new mongoose.Schema({
-  userId: { // User who created the campaign
+  userId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -15,36 +15,34 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  // Segmentation rules in a flexible JSON format
-  // Example: { "operator": "AND", "rules": [ { "field": "totalSpend", "condition": "GT", "value": 10000 }, { "field": "totalVisits", "condition": "LT", "value": 3 } ] }
-  // Or: { "operator": "OR", "rules": [ { "field": "lastActivity", "condition": "INACTIVE_DAYS", "value": 90 } ] }
+ 
   segmentRules: {
-    type: Object, // Store as a flexible JSON object
+    type: Object,
     required: true
   },
-  messageTemplate: { // The message content for the campaign
+  messageTemplate: { 
     type: String,
     required: true
   },
-  audienceSize: { // Estimated audience size when the campaign was created/last updated
+  audienceSize: { 
     type: Number,
     default: 0
   },
-  deliveryStats: { // Statistics about campaign delivery
+  deliveryStats: {
     sent: { type: Number, default: 0 },
     failed: { type: Number, default: 0 },
     pending: { type: Number, default: 0 }
   },
-  status: { // e.g., 'draft', 'scheduled', 'sent', 'completed'
+  status: { 
     type: String,
     enum: ['draft', 'scheduled', 'sent', 'completed', 'failed'],
     default: 'draft'
   },
-  scheduledAt: { // When the campaign is scheduled to be sent
+  scheduledAt: {
     type: Date,
-    sparse: true // Allows null values
+    sparse: true
   },
-  sentAt: { // When the campaign was actually sent
+  sentAt: { 
     type: Date,
     sparse: true
   },
@@ -58,7 +56,6 @@ const campaignSchema = new mongoose.Schema({
   }
 });
 
-// Update `updatedAt` field on save
 campaignSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
-  customerId: { // Unique identifier for the customer, could be from an external system
+  customerId: { 
     type: String,
     required: true,
     unique: true,
@@ -23,22 +23,22 @@ const customerSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
-    sparse: true // Allows null values
+    sparse: true 
   },
   address: {
     type: String,
     trim: true,
     sparse: true
   },
-  totalSpend: { // Aggregated total spend by the customer
+  totalSpend: { 
     type: Number,
     default: 0
   },
-  totalVisits: { // Aggregated total visits by the customer
+  totalVisits: { 
     type: Number,
     default: 0
   },
-  lastActivity: { // Timestamp of the last activity (e.g., order, visit)
+  lastActivity: {
     type: Date,
     default: Date.now
   },
@@ -52,7 +52,6 @@ const customerSchema = new mongoose.Schema({
   }
 });
 
-// Update `updatedAt` field on save
 customerSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();

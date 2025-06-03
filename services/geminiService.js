@@ -1,13 +1,7 @@
 
-const fetch = require('node-fetch'); // Use node-fetch for making HTTP requests
-
-/**
- * Generates structured segmentation rules from a natural language query using the Gemini API.
- * @param {string} naturalLanguageQuery - The user's natural language input (e.g., "people who haven't shopped in 6 months and spent over ₹5K").
- * @returns {Promise<Object|null>} - A promise that resolves to the generated segment rules object or null if failed.
- */
+const fetch = require('node-fetch'); 
 const generateSegmentRules = async (naturalLanguageQuery) => {
-  const apiKey = process.env.GEMINI_API_KEY; // Get API key from environment variables
+  const apiKey = process.env.GEMINI_API_KEY; 
   if (!apiKey) {
     console.error("GEMINI_API_KEY is not set in environment variables.");
     throw new Error("Gemini API key is missing.");
@@ -15,7 +9,7 @@ const generateSegmentRules = async (naturalLanguageQuery) => {
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-  // Define the prompt for the Gemini API
+  
   const prompt = `Convert the following natural language query into a JSON object representing customer segmentation rules.
   The rules should follow this structure:
   {
@@ -95,8 +89,8 @@ const generateSegmentRules = async (naturalLanguageQuery) => {
   const payload = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     generationConfig: {
-      responseMimeType: "application/json", // Request JSON output
-      responseSchema: { // Define the expected JSON schema
+      responseMimeType: "application/json", 
+      responseSchema: { 
         type: "OBJECT",
         properties: {
           operator: { type: "STRING", enum: ["AND", "OR"] },
@@ -107,11 +101,11 @@ const generateSegmentRules = async (naturalLanguageQuery) => {
               properties: {
                 field: { type: "STRING", enum: ["totalSpend", "totalVisits", "lastActivity", "email", "name", "address", "phone"] },
                 condition: { type: "STRING", enum: ["EQ", "NE", "GT", "LT", "GTE", "LTE", "CONTAINS", "NOCONTAINS", "INACTIVE_DAYS", "ACTIVE_DAYS"] },
-                value: { type: ["STRING", "NUMBER", "BOOLEAN"] }, // Allow string, number, boolean for value
-                operator: { type: "STRING", enum: ["AND", "OR"] }, // For nested rules
-                rules: { type: "ARRAY" } // For nested rules
+                value: { type: ["STRING", "NUMBER", "BOOLEAN"] }, 
+                operator: { type: "STRING", enum: ["AND", "OR"] }, 
+                rules: { type: "ARRAY" }
               },
-              required: ["field", "condition", "value"] // For simple rules
+              required: ["field", "condition", "value"] 
             }
           }
         },

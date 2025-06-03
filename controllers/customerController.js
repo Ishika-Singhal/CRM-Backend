@@ -1,31 +1,29 @@
 const Customer = require('../models/Customer');
-const Order = require('../models/Order'); // Needed to update customer stats based on orders
-
-// Ingest new customer data
+const Order = require('../models/Order'); 
 const createCustomer = async (req, res, next) => {
   try {
     const { customerId, name, email, phone, address } = req.body;
 
-    // Check if customer already exists
+  
     let customer = await Customer.findOne({ customerId });
     if (customer) {
       return res.status(409).json({ message: 'Customer with this ID already exists.', success: false });
     }
 
-    // Check if customer with this email already exists
+  
     customer = await Customer.findOne({ email });
     if (customer) {
       return res.status(409).json({ message: 'Customer with this email already exists.', success: false });
     }
 
-    // Create new customer
+
     const newCustomer = new Customer({
       customerId,
       name,
       email,
       phone,
       address,
-      lastActivity: Date.now() // Set initial last activity
+      lastActivity: Date.now() 
     });
 
     await newCustomer.save();
@@ -35,14 +33,14 @@ const createCustomer = async (req, res, next) => {
       customer: newCustomer
     });
   } catch (error) {
-    next(error); // Pass error to global error handling middleware
+    next(error); 
   }
 };
 
-// Get all customers
+
 const getCustomers = async (req, res, next) => {
   try {
-    const customers = await Customer.find().sort({ createdAt: -1 }); // Sort by most recent
+    const customers = await Customer.find().sort({ createdAt: -1 });
     res.status(200).json({
       message: 'Customers fetched successfully',
       success: true,
@@ -53,7 +51,7 @@ const getCustomers = async (req, res, next) => {
   }
 };
 
-// Get a single customer by ID
+
 const getCustomerById = async (req, res, next) => {
   try {
     const customer = await Customer.findOne({ customerId: req.params.id });
@@ -70,7 +68,7 @@ const getCustomerById = async (req, res, next) => {
   }
 };
 
-// Update customer data
+
 const updateCustomer = async (req, res, next) => {
   try {
     const { name, email, phone, address } = req.body;
@@ -80,7 +78,7 @@ const updateCustomer = async (req, res, next) => {
       return res.status(404).json({ message: 'Customer not found.', success: false });
     }
 
-    // Check if new email already exists for another customer
+
     if (email && email !== customer.email) {
       const existingEmailCustomer = await Customer.findOne({ email });
       if (existingEmailCustomer && existingEmailCustomer.customerId !== customer.customerId) {
@@ -92,7 +90,7 @@ const updateCustomer = async (req, res, next) => {
     customer.email = email || customer.email;
     customer.phone = phone || customer.phone;
     customer.address = address || customer.address;
-    customer.updatedAt = Date.now(); // Manually update timestamp
+    customer.updatedAt = Date.now(); 
 
     await customer.save();
     res.status(200).json({
@@ -105,33 +103,20 @@ const updateCustomer = async (req, res, next) => {
   }
 };
 
-// Delete a customer
+
 const deleteCustomer = async (req, res, next) => {
   try {
     const customer = await Customer.findOneAndDelete({ customerId: req.params.id });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found.', success: false });
     }
-    // Optionally, also delete related orders and communication logs for this customer
     await Order.deleteMany({ customerId: req.params.id });
-    // Note: Communication logs are linked by customerId string, not ObjectId, so direct deletion is fine.
-    // However, if CommunicationLog also had a ref to Customer's _id, you'd need to adjust.
-    // For now, we'll assume customerId string is enough.
-    // await CommunicationLog.deleteMany({ customerId: req.params.id });
 
     res.status(200).json({ message: 'Customer deleted successfully', success: true });
   } catch (error) {
     next(error);
   }
 };
-
-/**
- * Helper function to update customer's total spend and total visits.
- * This is called internally by orderController after an order is processed.
- * @param {string} customerId - The ID of the customer.
- * @param {number} amount - The amount to add to total spend.
- * @param {boolean} isNewOrder - True if this is a new order, increments total visits.
- */
 const updateCustomerStats = async (customerId, amount, isNewOrder = true) => {
   try {
     const customer = await Customer.findOne({ customerId });

@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  orderId: { // Unique identifier for the order
+  orderId: { 
     type: String,
     required: true,
     unique: true,
     trim: true
   },
-  customerId: { // Reference to the Customer who placed the order
+  customerId: { 
     type: String,
     required: true,
-    ref: 'Customer' // This is a virtual reference, actual foreign key is `customerId` string
+    ref: 'Customer' 
   },
   orderDate: {
     type: Date,
@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  items: [ // Array of items in the order
+  items: [ 
     {
       productId: { type: String, required: true },
       productName: { type: String, required: true },
@@ -30,10 +30,10 @@ const orderSchema = new mongoose.Schema({
       price: { type: Number, required: true, min: 0 }
     }
   ],
-  status: { // e.g., 'pending', 'completed', 'cancelled'
+  status: { 
     type: String,
     enum: ['pending', 'completed', 'cancelled', 'shipped', 'delivered'],
-    default: 'completed' // Assuming most ingested orders are completed
+    default: 'completed'
   },
   createdAt: {
     type: Date,
@@ -45,7 +45,7 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Update `updatedAt` field on save
+
 orderSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();

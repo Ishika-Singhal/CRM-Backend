@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
     unique: true,
-    sparse: true // Allows null values, useful if other auth methods are added later
+    sparse: true 
   },
   displayName: {
     type: String,
@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
-    sparse: true, // Allows null values
-    lowercase: true, // Stores emails in lowercase
-    trim: true, // Removes whitespace
+    sparse: true,
+    lowercase: true, 
+    trim: true, 
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] // Basic email regex
   },
   profilePicture: {
